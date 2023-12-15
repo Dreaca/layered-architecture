@@ -1,8 +1,6 @@
 package com.example.layeredarchitecture.controller;
 
-import com.example.layeredarchitecture.Dao.CustomerDAOImpl;
-import com.example.layeredarchitecture.Dao.ItemDAOImpl;
-import com.example.layeredarchitecture.Dao.PlaceOrderDAOImpl;
+import com.example.layeredarchitecture.Dao.*;
 import com.example.layeredarchitecture.db.DBConnection;
 import com.example.layeredarchitecture.model.CustomerDTO;
 import com.example.layeredarchitecture.model.ItemDTO;
@@ -35,7 +33,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-
 public class PlaceOrderFormController {
 
     public AnchorPane root;
@@ -54,9 +51,9 @@ public class PlaceOrderFormController {
     public Label lblTotal;
     private String orderId;
 
-    private ItemDAOImpl itemDAO = new ItemDAOImpl();
-    private CustomerDAOImpl customerDAO  = new CustomerDAOImpl();
-    private PlaceOrderDAOImpl placeOrderDAO  = new PlaceOrderDAOImpl();
+    private ItemDAO itemDAO = new ItemDAOImpl();
+    private CustomerDAO customerDAO  = new CustomerDAOImpl();
+    private PlaceOrderDAO placeOrderDAO  = new PlaceOrderDAOImpl();
     public void initialize() throws SQLException, ClassNotFoundException {
 
         tblOrderDetails.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("code"));
@@ -190,20 +187,6 @@ public class PlaceOrderFormController {
         loadAllItemCodes();
     }
 
-//    private boolean existItem(String code) throws SQLException, ClassNotFoundException {
-//        Connection connection = DBConnection.getDbConnection().getConnection();
-//        PreparedStatement pstm = connection.prepareStatement("SELECT code FROM Item WHERE code=?");
-//        pstm.setString(1, code);
-//        return pstm.executeQuery().next();
-//    }
-
-//    boolean existCustomer(String id) throws SQLException, ClassNotFoundException {
-//        Connection connection = DBConnection.getDbConnection().getConnection();
-//        PreparedStatement pstm = connection.prepareStatement("SELECT id FROM Customer WHERE id=?");
-//        pstm.setString(1, id);
-//        return pstm.executeQuery().next();
-//    }
-
     public String generateNewOrderId() {
         try {
                 return placeOrderDAO.generateOrderID();
@@ -217,9 +200,6 @@ public class PlaceOrderFormController {
 
     private void loadAllCustomerIds() {
         try {
-//            Connection connection = DBConnection.getDbConnection().getConnection();
-//            Statement stm = connection.createStatement();
-//            ResultSet rst = stm.executeQuery("SELECT * FROM Customer");
             ArrayList<String > list = customerDAO.loadCustomerIds();
             for (String a: list) {
                 cmbCustomerId.getItems().add(a);
