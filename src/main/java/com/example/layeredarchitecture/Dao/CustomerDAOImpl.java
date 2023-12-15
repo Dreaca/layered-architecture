@@ -61,5 +61,17 @@ public class CustomerDAOImpl {
             return "C00-001";
         }
     }
+    public ArrayList<String> loadCustomerIds() throws SQLException, ClassNotFoundException {
+        Connection connection = DBConnection.getDbConnection().getConnection();
+        Statement stm = connection.createStatement();
+        ResultSet rst = stm.executeQuery("SELECT * FROM Customer");
+        ArrayList<String > list =  new ArrayList<>();
+        while (rst.next()){
+            list.add(
+                    rst.getString(1)
+            );
+        }
+        return list;
+    }
 
 }

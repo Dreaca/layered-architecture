@@ -161,8 +161,6 @@ public class ManageCustomersFormController {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-
-
         } else {
             /*Update customer*/
             try {
