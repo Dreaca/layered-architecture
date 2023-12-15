@@ -37,8 +37,7 @@ public class ManageItemsFormController {
     public TableView<ItemTM> tblItems;
     public TextField txtUnitPrice;
     public JFXButton btnAddNewItem;
-
-    public ItemDAO itemDAO  = new ItemDAOImpl();
+    private ItemDAO itemDAO  = new ItemDAOImpl();
     public void initialize() {
         tblItems.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("code"));
         tblItems.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -113,6 +112,7 @@ public class ManageItemsFormController {
         primaryStage.centerOnScreen();
         Platform.runLater(() -> primaryStage.sizeToScene());
     }
+
 
     public void btnAddNew_OnAction(ActionEvent actionEvent) {
         txtCode.setDisable(false);
