@@ -334,7 +334,6 @@ public class PlaceOrderFormController {
            if (placeOrderDAO.saveOrder(orderId, orderDate, customerId, orderDetails)) {
                 return true;
            }
-
         return false;
     }
 
