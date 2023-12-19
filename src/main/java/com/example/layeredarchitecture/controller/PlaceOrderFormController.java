@@ -311,7 +311,7 @@ public class PlaceOrderFormController {
         try {
             /*if order id already exist*/
             if (orderDAO.existsOrder(orderId)) {
-
+                return false;
             }
             Transaction.setAutoCommit(false);
 
@@ -320,15 +320,12 @@ public class PlaceOrderFormController {
                 Transaction.setAutoCommit(true);
                 return false;
             }
-            //stm = connection.prepareStatement("INSERT INTO OrderDetails (oid, itemCode, unitPrice, qty) VALUES (?,?,?,?)");
-
             for (OrderDetailDTO detail : orderDetails) {
                 if (orderDetailDAO.saveOrder(orderId,detail) != 1) {
                     Transaction.rollback();
                     Transaction.setAutoCommit(true);
                     return false;
                 }
-
 //                //Search & Update Item
                 ItemDTO item = findItem(detail.getItemCode());
                 item.setQtyOnHand(item.getQtyOnHand() - detail.getQty());
