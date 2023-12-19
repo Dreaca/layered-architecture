@@ -1,12 +1,9 @@
 package com.example.layeredarchitecture.Dao;
 
 import com.example.layeredarchitecture.db.DBConnection;
-import com.example.layeredarchitecture.model.ItemDTO;
-import com.example.layeredarchitecture.model.OrderDetailDTO;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.List;
 
 
 public class OrderDAOImpl implements OrderDAO {
@@ -29,50 +26,14 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public boolean SaveOrder(String orderId, LocalDate orderDate, String customerId, List<OrderDetailDTO> orderDetails) {
-        Connection connection = null;
-        try {
-            connection = DBConnection.getDbConnection().getConnection();
-            /*if order id already exist*/
-            if (existsOrder(orderId)) {
+    public int saveOrder(String orderId, LocalDate orderDate, String customerId) throws SQLException, ClassNotFoundException {
+        Connection connection = DBConnection.getDbConnection().getConnection();
+        /*if order id already exist*/
 
-            }
-
-            connection.setAutoCommit(false);
-            PreparedStatement stm = connection.prepareStatement("INSERT INTO `Orders` (oid, date, customerID) VALUES (?,?,?)");
-            stm.setString(1, orderId);
-            stm.setDate(2, Date.valueOf(orderDate));
-            stm.setString(3, customerId);
-
-            if (stm.executeUpdate() != 1) {
-                connection.rollback();
-                connection.setAutoCommit(true);
-                return false;
-            }
-            for (OrderDetailDTO detail : orderDetails) {
-                if (orderDetailDAO.saveOrder(detail,orderId) != 1) {
-                    connection.rollback();
-                    connection.setAutoCommit(true);
-                    return false;
-                }
-
-//                //Search & Update Item
-                ItemDTO item = itemDAO.getItemData(detail.getItemCode());
-                item.setQtyOnHand(item.getQtyOnHand() - detail.getQty());
-                if (!itemDAO.updateItem(item)) {
-                    connection.rollback();
-                    connection.setAutoCommit(true);
-                    return false;
-                }
-            }
-            connection.commit();
-            connection.setAutoCommit(true);
-            return true;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return false;
+        PreparedStatement stm = connection.prepareStatement("INSERT INTO `Orders` (oid, date, customerID) VALUES (?,?,?)");
+        stm.setString(1, orderId);
+        stm.setDate(2, Date.valueOf(orderDate));
+        stm.setString(3, customerId);
+        return stm.executeUpdate();
     }
 }

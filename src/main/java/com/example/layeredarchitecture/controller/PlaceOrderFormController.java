@@ -1,7 +1,6 @@
 package com.example.layeredarchitecture.controller;
 
 import com.example.layeredarchitecture.Dao.*;
-import com.example.layeredarchitecture.db.DBConnection;
 import com.example.layeredarchitecture.model.CustomerDTO;
 import com.example.layeredarchitecture.model.ItemDTO;
 import com.example.layeredarchitecture.model.OrderDetailDTO;
@@ -31,7 +30,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-
 public class PlaceOrderFormController {
 
     public AnchorPane root;
@@ -52,6 +50,7 @@ public class PlaceOrderFormController {
     private CustomerDAO customerDAO = new CustomerDAOImpl();
     private ItemDAO itemDAO = new ItemDAOImpl();
     private OrderDAO orderDAO = new OrderDAOImpl();
+    private OrderDetailDAO orderDetailDAO = new OrderDetailDAOImpl();
     public void initialize() throws SQLException, ClassNotFoundException {
 
         tblOrderDetails.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("code"));
@@ -308,7 +307,51 @@ public class PlaceOrderFormController {
 
     public boolean saveOrder(String orderId, LocalDate orderDate, String customerId, List<OrderDetailDTO> orderDetails) {
         /*Transaction*/
-        return orderDAO.SaveOrder(orderId,orderDate,customerId,orderDetails);
+
+        try {
+            /*if order id already exist*/
+            if (orderDAO.existsOrder(orderId)) {
+
+            }
+            Transaction.setAutoCommit(false);
+
+            if (orderDAO.saveOrder(orderId,orderDate,customerId) != 1) {
+                Transaction.rollback();
+                Transaction.setAutoCommit(true);
+                return false;
+            }
+            //stm = connection.prepareStatement("INSERT INTO OrderDetails (oid, itemCode, unitPrice, qty) VALUES (?,?,?,?)");
+
+            for (OrderDetailDTO detail : orderDetails) {
+                if (orderDetailDAO.saveOrder(orderId,detail) != 1) {
+                    Transaction.rollback();
+                    Transaction.setAutoCommit(true);
+                    return false;
+                }
+
+//                //Search & Update Item
+                ItemDTO item = findItem(detail.getItemCode());
+                item.setQtyOnHand(item.getQtyOnHand() - detail.getQty());
+                if (!itemDAO.updateItem(item)) {
+                    Transaction.rollback();
+                    Transaction.setAutoCommit(true);
+                    return false;
+                }
+            }
+
+            Transaction.commit();
+            Transaction.setAutoCommit(true);
+            return true;
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public ItemDTO findItem(String code) throws SQLException, ClassNotFoundException {
+        return itemDAO.getItemData(code);
     }
 
 }
