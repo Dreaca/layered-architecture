@@ -11,12 +11,7 @@ import java.util.ConcurrentModificationException;
 public class OrderDetailDAOImpl implements  OrderDetailDAO{
     @Override
     public int saveOrder(String orderId,OrderDetailDTO detail) throws SQLException, ClassNotFoundException {
-        Connection connection = DBConnection.getDbConnection().getConnection();
-        PreparedStatement stm = connection.prepareStatement("INSERT INTO OrderDetails (oid, itemCode, unitPrice, qty) VALUES (?,?,?,?)");
-        stm.setString(1, orderId);
-        stm.setString(2, detail.getItemCode());
-        stm.setBigDecimal(3, detail.getUnitPrice());
-        stm.setInt(4, detail.getQty());
-        return stm.executeUpdate();
+        return SQLUtil.test("INSERT INTO OrderDetails (oid, itemCode, unitPrice, qty) VALUES (?,?,?,?)"
+                ,orderId,detail.getItemCode(),detail.getUnitPrice(),detail.getQty());
     }
 }
