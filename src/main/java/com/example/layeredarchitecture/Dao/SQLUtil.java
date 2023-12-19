@@ -7,12 +7,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class SQLUtil {
-    public static <T>T test(String sql, Object...strings) throws SQLException, ClassNotFoundException {
+    public static <T>T execute(String sql, Object...ob) throws SQLException, ClassNotFoundException {
         Connection connection = DBConnection.getDbConnection().getConnection();
         PreparedStatement pstm = connection.prepareStatement(sql);
 
-        for (int i= 0 ; i < strings.length; i++){
-            pstm.setObject((i+1), strings[i]);
+        for (int i= 0 ; i < ob.length; i++){
+            pstm.setObject((i+1), ob[i]);
         }
         if(sql.startsWith("SELECT")){
             return (T) pstm.executeQuery();
