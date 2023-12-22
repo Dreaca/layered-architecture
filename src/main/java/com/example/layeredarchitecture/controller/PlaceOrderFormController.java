@@ -1,5 +1,7 @@
 package com.example.layeredarchitecture.controller;
 
+import com.example.layeredarchitecture.Bo.PlaceOrderBO;
+import com.example.layeredarchitecture.Bo.PlaceOrderBoImpl;
 import com.example.layeredarchitecture.Dao.*;
 import com.example.layeredarchitecture.Dao.custom.CustomerDAO;
 import com.example.layeredarchitecture.Dao.custom.ItemDAO;
@@ -60,6 +62,7 @@ public class PlaceOrderFormController {
     private ItemDAO itemDAO = new ItemDAOImpl();
     private OrderDAO orderDAO = new OrderDAOImpl();
     private OrderDetailDAO orderDetailDAO = new OrderDetailDAOImpl();
+    private PlaceOrderBO placeOrderBO = new PlaceOrderBoImpl();
     public void initialize() throws SQLException, ClassNotFoundException {
 
         tblOrderDetails.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("code"));
@@ -315,10 +318,10 @@ public class PlaceOrderFormController {
     }
 
     public boolean saveOrder(String orderId, LocalDate orderDate, String customerId, List<OrderDetailDTO> orderDetails) {
-        /*Transaction*/
+        return placeOrderBO.placeOrder(orderId,orderDate,customerId,orderDetails);
 
-        try {
-            /*if order id already exist*/
+        /*try {
+            *//*if order id already exist*//*
             if (orderDAO.exist(orderId)) {
                 return false;
             }
@@ -354,7 +357,7 @@ public class PlaceOrderFormController {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return false;
+        return false;*/
     }
     public ItemDTO findItem(String code) throws SQLException, ClassNotFoundException {
         return itemDAO.search(code);
