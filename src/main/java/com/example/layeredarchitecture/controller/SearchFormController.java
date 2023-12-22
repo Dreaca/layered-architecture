@@ -1,5 +1,7 @@
 package com.example.layeredarchitecture.controller;
 
+import com.example.layeredarchitecture.Bo.SearchOrderBO;
+import com.example.layeredarchitecture.Bo.SearchOrderBoImpl;
 import com.example.layeredarchitecture.Dao.QueryDAOImpl;
 import com.example.layeredarchitecture.model.CustomerOrderDTO;
 import com.example.layeredarchitecture.view.tdm.CustomerOrderTM;
@@ -19,14 +21,22 @@ public class SearchFormController {
     public TableColumn cAddress;
     public TableColumn orderId;
     public TableColumn date;
-    QueryDAOImpl joinQueryDao = new QueryDAOImpl();
-    public void initialize() throws SQLException, ClassNotFoundException {
+//    QueryDAOImpl joinQueryDao = new QueryDAOImpl();
+    SearchOrderBO searchOrderBO = new SearchOrderBoImpl();
+    public void initialize() {
         setCellValueFactory();
         loadData();
     }
 
-    private void loadData() throws SQLException, ClassNotFoundException {
-        ArrayList<CustomerOrderDTO> list = joinQueryDao.loadJoinQuery();
+    private void loadData()  {
+        ArrayList<CustomerOrderDTO> list = null;
+        try {
+            list = searchOrderBO.loadData();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         ObservableList<CustomerOrderTM> oblist =  FXCollections.observableArrayList();
         for (CustomerOrderDTO t: list) {
             System.out.println(t);
