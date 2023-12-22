@@ -1,19 +1,10 @@
 package com.example.layeredarchitecture.controller;
 
-import com.example.layeredarchitecture.Bo.PlaceOrderBO;
-import com.example.layeredarchitecture.Bo.PlaceOrderBoImpl;
-import com.example.layeredarchitecture.Dao.*;
-import com.example.layeredarchitecture.Dao.custom.CustomerDAO;
-import com.example.layeredarchitecture.Dao.custom.ItemDAO;
-import com.example.layeredarchitecture.Dao.custom.OrderDAO;
-import com.example.layeredarchitecture.Dao.custom.OrderDetailDAO;
-import com.example.layeredarchitecture.Dao.custom.impl.CustomerDAOImpl;
-import com.example.layeredarchitecture.Dao.custom.impl.ItemDAOImpl;
-import com.example.layeredarchitecture.Dao.custom.impl.OrderDAOImpl;
-import com.example.layeredarchitecture.Dao.custom.impl.OrderDetailDAOImpl;
+import com.example.layeredarchitecture.Bo.BOFactory;
+import com.example.layeredarchitecture.Bo.custom.PlaceOrderBO;
+import com.example.layeredarchitecture.Bo.custom.impl.PlaceOrderBoImpl;
 import com.example.layeredarchitecture.model.CustomerDTO;
 import com.example.layeredarchitecture.model.ItemDTO;
-import com.example.layeredarchitecture.model.OrderDTO;
 import com.example.layeredarchitecture.model.OrderDetailDTO;
 import com.example.layeredarchitecture.view.tdm.OrderDetailTM;
 import com.jfoenix.controls.JFXButton;
@@ -58,7 +49,7 @@ public class PlaceOrderFormController {
     public Label lblDate;
     public Label lblTotal;
     private String orderId;
-    private PlaceOrderBO placeOrderBO = new PlaceOrderBoImpl();
+    private PlaceOrderBO placeOrderBO = (PlaceOrderBO) BOFactory.getBoFactory().getBo(BOFactory.BOTypes.PLACE_ORDER);
     public void initialize() throws SQLException, ClassNotFoundException {
 
         tblOrderDetails.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("code"));
@@ -317,6 +308,7 @@ public class PlaceOrderFormController {
         try {
             return placeOrderBO.placeOrder(orderId,orderDate,customerId,orderDetails);
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);

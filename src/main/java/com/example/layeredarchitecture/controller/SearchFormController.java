@@ -1,8 +1,8 @@
 package com.example.layeredarchitecture.controller;
 
-import com.example.layeredarchitecture.Bo.SearchOrderBO;
-import com.example.layeredarchitecture.Bo.SearchOrderBoImpl;
-import com.example.layeredarchitecture.Dao.QueryDAOImpl;
+import com.example.layeredarchitecture.Bo.BOFactory;
+import com.example.layeredarchitecture.Bo.custom.SearchOrderBO;
+import com.example.layeredarchitecture.Bo.custom.impl.SearchOrderBoImpl;
 import com.example.layeredarchitecture.model.CustomerOrderDTO;
 import com.example.layeredarchitecture.view.tdm.CustomerOrderTM;
 import javafx.collections.FXCollections;
@@ -21,8 +21,8 @@ public class SearchFormController {
     public TableColumn cAddress;
     public TableColumn orderId;
     public TableColumn date;
-//    QueryDAOImpl joinQueryDao = new QueryDAOImpl();
-    SearchOrderBO searchOrderBO = new SearchOrderBoImpl();
+
+    SearchOrderBO searchOrderBO = (SearchOrderBO) BOFactory.getBoFactory().getBo(BOFactory.BOTypes.SEARCHORDER);
     public void initialize() {
         setCellValueFactory();
         loadData();

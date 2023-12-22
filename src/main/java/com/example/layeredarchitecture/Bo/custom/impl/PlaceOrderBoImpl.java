@@ -1,5 +1,7 @@
-package com.example.layeredarchitecture.Bo;
+package com.example.layeredarchitecture.Bo.custom.impl;
 
+import com.example.layeredarchitecture.Bo.custom.PlaceOrderBO;
+import com.example.layeredarchitecture.Dao.DAOFactory;
 import com.example.layeredarchitecture.Dao.Transaction;
 import com.example.layeredarchitecture.Dao.custom.CustomerDAO;
 import com.example.layeredarchitecture.Dao.custom.ItemDAO;
@@ -20,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaceOrderBoImpl implements PlaceOrderBO {
-    private CustomerDAO customerDAO = new CustomerDAOImpl();
-    private ItemDAO itemDAO = new ItemDAOImpl();
-    private OrderDAO orderDAO = new OrderDAOImpl();
-    private OrderDetailDAO orderDetailDAO = new OrderDetailDAOImpl();
+    private CustomerDAO customerDAO = (CustomerDAO) DAOFactory.getDaoFactory().getDao(DAOFactory.DAOTypes.CUSTOMER);
+    private ItemDAO itemDAO = (ItemDAO) DAOFactory.getDaoFactory().getDao(DAOFactory.DAOTypes.ITEM);
+    private OrderDAO orderDAO = (OrderDAO) DAOFactory.getDaoFactory().getDao(DAOFactory.DAOTypes.ORDER);
+    private OrderDetailDAO orderDetailDAO = (OrderDetailDAO) DAOFactory.getDaoFactory().getDao(DAOFactory.DAOTypes.ORDER_DETAIL);
     @Override
     public boolean placeOrder(String orderId, LocalDate orderDate, String customerId, List<OrderDetailDTO> orderDetails) throws SQLException, ClassNotFoundException {
             /*if order id already exist*/
@@ -32,13 +34,13 @@ public class PlaceOrderBoImpl implements PlaceOrderBO {
             }
             Transaction.setAutoCommit(false);
 
-            if (orderDAO.save(new OrderDTO(orderId,orderDate,customerId))) {
+            if (!orderDAO.save(new OrderDTO(orderId,orderDate,customerId))) {
                 Transaction.rollback();
                 Transaction.setAutoCommit(true);
                 return false;
             }
             for (OrderDetailDTO detail : orderDetails) {
-                if (orderDetailDAO.save(new OrderDetailDTO(orderId,detail.getItemCode(),detail.getQty(),detail.getUnitPrice()))) {
+                if (!orderDetailDAO.save(new OrderDetailDTO(orderId,detail.getItemCode(),detail.getQty(),detail.getUnitPrice()))) {
                     Transaction.rollback();
                     Transaction.setAutoCommit(true);
                     return false;
@@ -54,7 +56,6 @@ public class PlaceOrderBoImpl implements PlaceOrderBO {
                     return false;
                 }
             }
-
             Transaction.commit();
             Transaction.setAutoCommit(true);
             return true;
@@ -80,7 +81,7 @@ public class PlaceOrderBoImpl implements PlaceOrderBO {
 
     @Override
     public String generateNewOrderId() throws SQLException, ClassNotFoundException {
-        return customerDAO.getNextID();
+        return orderDAO.getNextID();
     }
 
     @Override
