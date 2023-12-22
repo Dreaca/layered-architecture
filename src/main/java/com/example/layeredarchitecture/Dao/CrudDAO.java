@@ -1,5 +1,7 @@
 package com.example.layeredarchitecture.Dao;
 
+import com.example.layeredarchitecture.entity.Customer;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 

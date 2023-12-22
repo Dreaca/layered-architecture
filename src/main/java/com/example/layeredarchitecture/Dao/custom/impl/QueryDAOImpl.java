@@ -2,6 +2,7 @@ package com.example.layeredarchitecture.Dao.custom.impl;
 
 import com.example.layeredarchitecture.Dao.SQLUtil;
 import com.example.layeredarchitecture.Dao.custom.QueryDAO;
+import com.example.layeredarchitecture.entity.CustomerOrder;
 import com.example.layeredarchitecture.model.CustomerOrderDTO;
 
 import java.sql.ResultSet;
@@ -10,12 +11,12 @@ import java.util.ArrayList;
 
 public class QueryDAOImpl implements QueryDAO {
     @Override
-    public ArrayList<CustomerOrderDTO> loadJoinQuery() throws SQLException, ClassNotFoundException {
+    public ArrayList<CustomerOrder> loadJoinQuery() throws SQLException, ClassNotFoundException {
         ResultSet set = SQLUtil.execute("SELECT * FROM customer c RIGHT JOIN orders o ON c.id = o.customerId ");
-        ArrayList<CustomerOrderDTO> list = new ArrayList<>();
+        ArrayList<CustomerOrder> list = new ArrayList<>();
         while(set.next()){
             list.add(
-                    new CustomerOrderDTO(
+                    new CustomerOrder(
                             set.getString(1),
                             set.getString(2),
                             set.getString(3),

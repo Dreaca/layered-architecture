@@ -11,6 +11,10 @@ import com.example.layeredarchitecture.Dao.custom.impl.CustomerDAOImpl;
 import com.example.layeredarchitecture.Dao.custom.impl.ItemDAOImpl;
 import com.example.layeredarchitecture.Dao.custom.impl.OrderDAOImpl;
 import com.example.layeredarchitecture.Dao.custom.impl.OrderDetailDAOImpl;
+import com.example.layeredarchitecture.entity.Customer;
+import com.example.layeredarchitecture.entity.Item;
+import com.example.layeredarchitecture.entity.Order;
+import com.example.layeredarchitecture.entity.OrderDetails;
 import com.example.layeredarchitecture.model.CustomerDTO;
 import com.example.layeredarchitecture.model.ItemDTO;
 import com.example.layeredarchitecture.model.OrderDTO;
@@ -34,13 +38,13 @@ public class PlaceOrderBoImpl implements PlaceOrderBO {
             }
             Transaction.setAutoCommit(false);
 
-            if (!orderDAO.save(new OrderDTO(orderId,orderDate,customerId))) {
+            if (!orderDAO.save(new Order(orderId,orderDate,customerId))) {
                 Transaction.rollback();
                 Transaction.setAutoCommit(true);
                 return false;
             }
             for (OrderDetailDTO detail : orderDetails) {
-                if (!orderDetailDAO.save(new OrderDetailDTO(orderId,detail.getItemCode(),detail.getQty(),detail.getUnitPrice()))) {
+                if (!orderDetailDAO.save(new OrderDetails(orderId,detail.getItemCode(),detail.getQty(),detail.getUnitPrice()))) {
                     Transaction.rollback();
                     Transaction.setAutoCommit(true);
                     return false;
@@ -50,7 +54,7 @@ public class PlaceOrderBoImpl implements PlaceOrderBO {
 //                ItemDTO item = null;
 
                 item.setQtyOnHand(item.getQtyOnHand() - detail.getQty());
-                if (!itemDAO.update(item)) {
+                if (!itemDAO.update(new Item(item.getCode(),item.getDescription(),item.getUnitPrice(),item.getQtyOnHand()))) {
                     Transaction.rollback();
                     Transaction.setAutoCommit(true);
                     return false;
@@ -61,12 +65,14 @@ public class PlaceOrderBoImpl implements PlaceOrderBO {
             return true;
     }
     public ItemDTO findItem(String code) throws SQLException, ClassNotFoundException {
-        return itemDAO.search(code);
+        Item item = itemDAO.search(code);
+        return new ItemDTO(item.getCode(),item.getDescription(),item.getUnitPrice(),item.getQtyOnHand());
     }
 
     @Override
     public CustomerDTO searchCustomer(String id) throws SQLException, ClassNotFoundException {
-        return customerDAO.search(id);
+        Customer customer = customerDAO.search(id);
+        return new CustomerDTO(customer.getId(),customer.getName(),customer.getAddress());
     }
 
     @Override
